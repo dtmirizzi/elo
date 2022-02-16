@@ -2,7 +2,7 @@
 from elo import CountedRating, Elo
 
 
-__all__ = ['fide30', 'fide25', 'fide', 'uscf']
+__all__ = ["fide30", "fide25", "fide", "uscf"]
 
 
 class FIDERating(CountedRating):
@@ -38,6 +38,7 @@ def make_fide_k_factor(scarce_games, too_low_rating, stabled):
         assert rating < 2400
         assert rating.times >= 30
         return too_low_rating
+
     return fide_k_factor
 
 

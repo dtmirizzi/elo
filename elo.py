@@ -12,19 +12,36 @@ from datetime import datetime
 import inspect
 
 
-__version__  = '0.1.1'
-__all__ = ['Elo', 'Rating', 'CountedRating', 'TimedRating', 'rate', 'adjust',
-           'expect', 'rate_1vs1', 'adjust_1vs1', 'quality_1vs1', 'setup',
-           'global_env', 'WIN', 'DRAW', 'LOSS', 'K_FACTOR', 'RATING_CLASS',
-           'INITIAL', 'BETA']
+__version__ = "0.1.1"
+__all__ = [
+    "Elo",
+    "Rating",
+    "CountedRating",
+    "TimedRating",
+    "rate",
+    "adjust",
+    "expect",
+    "rate_1vs1",
+    "adjust_1vs1",
+    "quality_1vs1",
+    "setup",
+    "global_env",
+    "WIN",
+    "DRAW",
+    "LOSS",
+    "K_FACTOR",
+    "RATING_CLASS",
+    "INITIAL",
+    "BETA",
+]
 
 
 #: The actual score for win.
-WIN = 1.
+WIN = 1.0
 #: The actual score for draw.
 DRAW = 0.5
 #: The actual score for loss.
-LOSS = 0.
+LOSS = 0.0
 
 #: Default K-factor.
 K_FACTOR = 10
@@ -39,7 +56,7 @@ BETA = 200
 class Rating(object):
 
     try:
-        __metaclass__ = __import__('abc').ABCMeta
+        __metaclass__ = __import__("abc").ABCMeta
     except ImportError:
         # for Python 2.5
         pass
@@ -130,12 +147,13 @@ class Rating(object):
     def __repr__(self):
         c = type(self)
         ext_params = inspect.getargspec(c.__init__)[0][2:]
-        kwargs = ', '.join('%s=%r' % (param, getattr(self, param))
-                           for param in ext_params)
+        kwargs = ", ".join(
+            "%s=%r" % (param, getattr(self, param)) for param in ext_params
+        )
         if kwargs:
-            kwargs = ', ' + kwargs
-        args = ('.'.join([c.__module__, c.__name__]), self.value, kwargs)
-        return '%s(%.3f%s)' % args
+            kwargs = ", " + kwargs
+        args = (".".join([c.__module__, c.__name__]), self.value, kwargs)
+        return "%s(%.3f%s)" % args
 
 
 try:
@@ -175,9 +193,9 @@ class TimedRating(Rating):
 
 
 class Elo(object):
-
-    def __init__(self, k_factor=K_FACTOR, rating_class=RATING_CLASS,
-                 initial=INITIAL, beta=BETA):
+    def __init__(
+        self, k_factor=K_FACTOR, rating_class=RATING_CLASS, initial=INITIAL, beta=BETA
+    ):
         self.k_factor = k_factor
         self.rating_class = rating_class
         self.initial = initial
@@ -190,19 +208,20 @@ class Elo(object):
         # http://www.chess-mind.com/en/elo-system
         diff = float(other_rating) - float(rating)
         f_factor = 2 * self.beta  # rating disparity
-        return 1. / (1 + 10 ** (diff / f_factor))
+        return 1.0 / (1 + 10 ** (diff / f_factor))
 
     def adjust(self, rating, series):
         """Calculates the adjustment value."""
-        return sum(score - self.expect(rating, other_rating)
-                   for score, other_rating in series)
+        return sum(
+            score - self.expect(rating, other_rating) for score, other_rating in series
+        )
 
     def rate(self, rating, series):
         """Calculates new ratings by the game result series."""
         rating = self.ensure_rating(rating)
         k = self.k_factor(rating) if callable(self.k_factor) else self.k_factor
         new_rating = float(rating) + k * self.adjust(rating, series)
-        if hasattr(rating, 'rated'):
+        if hasattr(rating, "rated"):
             new_rating = rating.rated(new_rating)
         return new_rating
 
@@ -211,8 +230,10 @@ class Elo(object):
 
     def rate_1vs1(self, rating1, rating2, drawn=False):
         scores = (DRAW, DRAW) if drawn else (WIN, LOSS)
-        return (self.rate(rating1, [(scores[0], rating2)]),
-                self.rate(rating2, [(scores[1], rating1)]))
+        return (
+            self.rate(rating1, [(scores[0], rating2)]),
+            self.rate(rating2, [(scores[1], rating1)]),
+        )
 
     def quality_1vs1(self, rating1, rating2):
         return 2 * (0.5 - abs(0.5 - self.expect(rating1, rating2)))
@@ -247,13 +268,17 @@ class Elo(object):
         rc = self.rating_class
         if callable(self.k_factor):
             f = self.k_factor
-            k_factor = '.'.join([f.__module__, f.__name__])
+            k_factor = ".".join([f.__module__, f.__name__])
         else:
-            k_factor = '%.3f' % self.k_factor
-        args = ('.'.join([c.__module__, c.__name__]), k_factor,
-                '.'.join([rc.__module__, rc.__name__]), self.initial, self.beta)
-        return ('%s(k_factor=%s, rating_class=%s, '
-                'initial=%.3f, beta=%.3f)' % args)
+            k_factor = "%.3f" % self.k_factor
+        args = (
+            ".".join([c.__module__, c.__name__]),
+            k_factor,
+            ".".join([rc.__module__, rc.__name__]),
+            self.initial,
+            self.beta,
+        )
+        return "%s(k_factor=%s, rating_class=%s, " "initial=%.3f, beta=%.3f)" % args
 
 
 def rate(rating, series):
@@ -280,8 +305,9 @@ def quality_1vs1(rating1, rating2):
     return global_env().quality_1vs1(rating1, rating2)
 
 
-def setup(k_factor=K_FACTOR, rating_class=RATING_CLASS,
-          initial=INITIAL, beta=BETA, env=None):
+def setup(
+    k_factor=K_FACTOR, rating_class=RATING_CLASS, initial=INITIAL, beta=BETA, env=None
+):
     if env is None:
         env = Elo(k_factor, rating_class, initial, beta)
     global_env.__elo__ = env

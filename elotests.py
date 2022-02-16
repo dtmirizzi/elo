@@ -9,7 +9,6 @@ from elopopulars import *
 
 
 class almost(Approximate):
-
     def normalize(self, value):
         if isinstance(value, Rating) and not isinstance(value, float):
             return self.normalize(float(value))
@@ -43,7 +42,9 @@ def test_initial_rating():
 
 
 def test_custom_rating_class():
-    class CustomRating(Rating): pass
+    class CustomRating(Rating):
+        pass
+
     assert Elo(CustomRating(1989), rating_class=CustomRating)
     elo = Elo(1989, rating_class=CustomRating)
     assert isinstance(elo.create_rating(1989), CustomRating)
@@ -52,10 +53,11 @@ def test_custom_rating_class():
 def test_mixed_rating_class():
     class MixedRating(CountedRating, TimedRating):
         pass
+
     env = Elo(rating_class=MixedRating)
     rating = env.create_rating(1000)
-    assert hasattr(rating, 'times')
-    assert hasattr(rating, 'rated_at')
+    assert hasattr(rating, "times")
+    assert hasattr(rating, "rated_at")
     assert rating.times == 0
     assert rating.rated_at is None
     rating = env.rate(rating, [(WIN, 1000)])
@@ -89,8 +91,7 @@ def test_uscf():
     assert uscf.k_factor(2200) == 24
     assert uscf.k_factor(3000) == 16
     rating = 1613
-    series = [(LOSS, 1609), (DRAW, 1477), (WIN, 1388), (WIN, 1586),
-              (LOSS, 1720)]
+    series = [(LOSS, 1609), (DRAW, 1477), (WIN, 1388), (WIN, 1586), (LOSS, 1720)]
     assert round(uscf.rate(rating, series)) == 1601
 
 

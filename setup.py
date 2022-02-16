@@ -34,47 +34,50 @@ import sys
 
 
 # detect the current version
-with open('elo.py') as f:
-    version = re.search(r'__version__\s*=\s*\'(.+?)\'', f.read()).group(1)
+with open("elo.py") as f:
+    version = re.search(r"__version__\s*=\s*\'(.+?)\'", f.read()).group(1)
 assert version
 
 
 # use pytest instead
 def run_tests(self):
-    pyc = re.compile(r'\.pyc|\$py\.class')
-    test_file = pyc.sub('.py', __import__(self.test_suite).__file__)
-    raise SystemExit(__import__('pytest').main([test_file]))
+    pyc = re.compile(r"\.pyc|\$py\.class")
+    test_file = pyc.sub(".py", __import__(self.test_suite).__file__)
+    raise SystemExit(__import__("pytest").main([test_file]))
+
+
 test.run_tests = run_tests
 
 
 setup(
-    name='elo',
+    name="elo",
     version=version,
-    license='BSD',
-    author='Heungsub Lee',
-    author_email=re.sub('((sub).)(.*)', r'\2@\1.\3', 'sublee'),
-    url='http://github.com/sublee/elo',
-    description='A rating system for chess tournaments',
+    license="BSD",
+    author="Heungsub Lee",
+    author_email=re.sub("((sub).)(.*)", r"\2@\1.\3", "sublee"),
+    url="http://github.com/sublee/elo",
+    description="A rating system for chess tournaments",
     long_description=__doc__,
-    platforms='any',
-    py_modules=['elo'],
-    classifiers=['Development Status :: 1 - Planning',
-                 'Intended Audience :: Developers',
-                 'License :: OSI Approved :: BSD License',
-                 'Operating System :: OS Independent',
-                 'Programming Language :: Python',
-                 'Programming Language :: Python :: 2',
-                 'Programming Language :: Python :: 2.5',
-                 'Programming Language :: Python :: 2.6',
-                 'Programming Language :: Python :: 2.7',
-                 'Programming Language :: Python :: 3',
-                 'Programming Language :: Python :: 3.1',
-                 'Programming Language :: Python :: 3.2',
-                 'Programming Language :: Python :: 3.3',
-                 'Programming Language :: Python :: Implementation :: CPython',
-                 'Programming Language :: Python :: Implementation :: PyPy',
-                 'Topic :: Games/Entertainment'],
-    test_suite='elotests',
-    tests_require=['pytest', 'almost'],
-    use_2to3=(sys.version_info[0] >= 3),
+    platforms="any",
+    py_modules=["elo"],
+    classifiers=[
+        "Development Status :: 1 - Planning",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.5",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.1",
+        "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "Topic :: Games/Entertainment",
+    ],
+    test_suite="elotests",
+    tests_require=["pytest", "almost"],
 )
